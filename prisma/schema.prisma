@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  role          Role          @default(CLIENT)
+  pets          Pet[]
+  appointments  Appointment[]
+  notifications Notification[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Pet {
+  id            String         @id @default(uuid())
+  name          String
+  species       String
+  breed         String?
+  birthDate     DateTime?
+  owner         User          @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  healthRecords HealthRecord[]
+  appointments  Appointment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model HealthRecord {
+  id          String    @id @default(uuid())
+  pet         Pet       @relation(fields: [petId], references: [id])
+  petId       String
+  type        String
+  description String
+  date        DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Service {
+  id           String        @id @default(uuid())
+  name         String
+  description  String
+  price        Float
+  duration     Int          // Duration in minutes
+  appointments Appointment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String
+  price       Float
+  stock       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Appointment {
+  id        String    @id @default(uuid())
+  pet       Pet       @relation(fields: [petId], references: [id])
+  petId     String
+  service   Service   @relation(fields: [serviceId], references: [id])
+  serviceId String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  date      DateTime
+  status    AppointmentStatus @default(SCHEDULED)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  read      Boolean   @default(false)
+  type      NotificationType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+  CLIENT
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum NotificationType {
+  APPOINTMENT_REMINDER
+  APPOINTMENT_CONFIRMATION
+  APPOINTMENT_CANCELLATION
+  LOW_STOCK
+  GENERAL
+}

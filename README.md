@@ -166,230 +166,6 @@ petshop-api/
 └── docker-compose.yml  # Configuração Docker
 ```
 
-## Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Abra um Pull Request
-
-## 🚀 Deploy
-
-### Preparação para Produção
-
-1. **Variáveis de Ambiente**
-   ```env
-   # Produção
-   DATABASE_URL="mysql://user:password@your-db-host:3306/petshop"
-   JWT_SECRET="seu-secret-jwt-producao"
-   PORT=3000
-   NODE_ENV=production
-   ```
-
-2. **Build da Aplicação**
-   ```bash
-   # Gera a build otimizada
-   npm run build
-   
-   # Verifica a build
-   npm run start:prod
-   ```
-
-### Opções de Deploy
-
-#### 1. Deploy Tradicional
-
-1. **Preparação do Servidor**
-   ```bash
-   # Instala o Node.js
-   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-   sudo apt-get install -y nodejs
-
-   # Instala o PM2
-   npm install -g pm2
-   ```
-
-2. **Deploy da Aplicação**
-   ```bash
-   # Copia os arquivos para o servidor
-   scp -r dist package.json .env user@your-server:/app/petshop-api
-
-   # Instala dependências
-   npm install --production
-
-   # Inicia com PM2
-   pm2 start dist/main.js --name petshop-api
-   ```
-
-3. **Configuração do Nginx**
-   ```nginx
-   server {
-       listen 80;
-       server_name api.seu-dominio.com;
-
-       location / {
-           proxy_pass http://localhost:3000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection 'upgrade';
-           proxy_set_header Host $host;
-           proxy_cache_bypass $http_upgrade;
-       }
-   }
-   ```
-
-#### 2. Deploy com Docker
-
-1. **Build da Imagem**
-   ```bash
-   # Constrói a imagem
-   docker build -t petshop-api .
-
-   # Testa a imagem localmente
-   docker run -p 3000:3000 --env-file .env petshop-api
-   ```
-
-2. **Deploy com Docker Compose**
-   ```bash
-   # Inicia os serviços
-   docker-compose -f docker-compose.prod.yml up -d
-
-   # Verifica os logs
-   docker-compose logs -f
-   ```
-
-#### 3. Deploy em Cloud
-
-##### AWS Elastic Beanstalk
-
-1. **Configuração do EB CLI**
-   ```bash
-   # Instala EB CLI
-   pip install awsebcli
-
-   # Inicializa o projeto
-   eb init petshop-api --platform node.js --region us-east-1
-   ```
-
-2. **Deploy**
-   ```bash
-   # Cria o ambiente
-   eb create production
-
-   # Deploy de atualizações
-   eb deploy
-   ```
-
-##### Heroku
-
-1. **Configuração**
-   ```bash
-   # Login no Heroku
-   heroku login
-
-   # Cria a aplicação
-   heroku create petshop-api
-   ```
-
-2. **Deploy**
-   ```bash
-   # Configura variáveis de ambiente
-   heroku config:set DATABASE_URL="seu-database-url"
-   heroku config:set JWT_SECRET="seu-jwt-secret"
-
-   # Push para o Heroku
-   git push heroku main
-   ```
-
-### Monitoramento e Manutenção
-
-1. **Monitoramento com PM2**
-   ```bash
-   # Status da aplicação
-   pm2 status
-
-   # Monitoramento em tempo real
-   pm2 monit
-
-   # Logs
-   pm2 logs petshop-api
-   ```
-
-2. **Backup do Banco de Dados**
-   ```bash
-   # Backup
-   mysqldump -u user -p petshop > backup.sql
-
-   # Restauração
-   mysql -u user -p petshop < backup.sql
-   ```
-
-3. **Healthcheck**
-   - Endpoint: `/api/health`
-   - Monitora: status da API, conexão com banco de dados e serviços externos
-
-### CI/CD Pipeline (Exemplo com GitHub Actions)
-
-```yaml
-name: Deploy
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run tests
-        run: npm test
-        
-      - name: Build
-        run: npm run build
-        
-      - name: Deploy to production
-        run: |
-          # Seus comandos de deploy aqui
-```
-
-### Boas Práticas de Deploy
-
-1. **Segurança**
-   - Use HTTPS
-   - Configure CORS adequadamente
-   - Mantenha as dependências atualizadas
-   - Implemente rate limiting
-
-2. **Performance**
-   - Configure cache adequadamente
-   - Use compressão gzip/brotli
-   - Otimize consultas ao banco de dados
-
-3. **Disponibilidade**
-   - Configure auto-scaling
-   - Implemente retry policies
-   - Mantenha logs adequados
-
-4. **Backup e Recuperação**
-   - Mantenha backups regulares
-   - Documente procedimentos de recuperação
-   - Teste os procedimentos periodicamente
-
----
-
-Desenvolvido com ❤️ pela equipe PetShop API
-
 ## 📦 Exemplos de Payloads
 
 ### Autenticação
@@ -649,3 +425,229 @@ POST /api/reports/sales
   "message": "Já existe um produto com este nome",
   "error": "Conflict"
 }
+
+```
+
+## 🚀 Deploy
+
+### Preparação para Produção
+
+1. **Variáveis de Ambiente**
+   ```env
+   # Produção
+   DATABASE_URL="mysql://user:password@your-db-host:3306/petshop"
+   JWT_SECRET="seu-secret-jwt-producao"
+   PORT=3000
+   NODE_ENV=production
+   ```
+
+2. **Build da Aplicação**
+   ```bash
+   # Gera a build otimizada
+   npm run build
+   
+   # Verifica a build
+   npm run start:prod
+   ```
+
+### Opções de Deploy
+
+#### 1. Deploy Tradicional
+
+1. **Preparação do Servidor**
+   ```bash
+   # Instala o Node.js
+   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+
+   # Instala o PM2
+   npm install -g pm2
+   ```
+
+2. **Deploy da Aplicação**
+   ```bash
+   # Copia os arquivos para o servidor
+   scp -r dist package.json .env user@your-server:/app/petshop-api
+
+   # Instala dependências
+   npm install --production
+
+   # Inicia com PM2
+   pm2 start dist/main.js --name petshop-api
+   ```
+
+3. **Configuração do Nginx**
+   ```nginx
+   server {
+       listen 80;
+       server_name api.seu-dominio.com;
+
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
+
+#### 2. Deploy com Docker
+
+1. **Build da Imagem**
+   ```bash
+   # Constrói a imagem
+   docker build -t petshop-api .
+
+   # Testa a imagem localmente
+   docker run -p 3000:3000 --env-file .env petshop-api
+   ```
+
+2. **Deploy com Docker Compose**
+   ```bash
+   # Inicia os serviços
+   docker-compose -f docker-compose.prod.yml up -d
+
+   # Verifica os logs
+   docker-compose logs -f
+   ```
+
+#### 3. Deploy em Cloud
+
+##### AWS Elastic Beanstalk
+
+1. **Configuração do EB CLI**
+   ```bash
+   # Instala EB CLI
+   pip install awsebcli
+
+   # Inicializa o projeto
+   eb init petshop-api --platform node.js --region us-east-1
+   ```
+
+2. **Deploy**
+   ```bash
+   # Cria o ambiente
+   eb create production
+
+   # Deploy de atualizações
+   eb deploy
+   ```
+
+##### Heroku
+
+1. **Configuração**
+   ```bash
+   # Login no Heroku
+   heroku login
+
+   # Cria a aplicação
+   heroku create petshop-api
+   ```
+
+2. **Deploy**
+   ```bash
+   # Configura variáveis de ambiente
+   heroku config:set DATABASE_URL="seu-database-url"
+   heroku config:set JWT_SECRET="seu-jwt-secret"
+
+   # Push para o Heroku
+   git push heroku main
+   ```
+
+### Monitoramento e Manutenção
+
+1. **Monitoramento com PM2**
+   ```bash
+   # Status da aplicação
+   pm2 status
+
+   # Monitoramento em tempo real
+   pm2 monit
+
+   # Logs
+   pm2 logs petshop-api
+   ```
+
+2. **Backup do Banco de Dados**
+   ```bash
+   # Backup
+   mysqldump -u user -p petshop > backup.sql
+
+   # Restauração
+   mysql -u user -p petshop < backup.sql
+   ```
+
+3. **Healthcheck**
+   - Endpoint: `/api/health`
+   - Monitora: status da API, conexão com banco de dados e serviços externos
+
+### CI/CD Pipeline (Exemplo com GitHub Actions)
+
+```yaml
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests
+        run: npm test
+        
+      - name: Build
+        run: npm run build
+        
+      - name: Deploy to production
+        run: |
+          # Seus comandos de deploy aqui
+```
+
+### Boas Práticas de Deploy
+
+1. **Segurança**
+   - Use HTTPS
+   - Configure CORS adequadamente
+   - Mantenha as dependências atualizadas
+   - Implemente rate limiting
+
+2. **Performance**
+   - Configure cache adequadamente
+   - Use compressão gzip/brotli
+   - Otimize consultas ao banco de dados
+
+3. **Disponibilidade**
+   - Configure auto-scaling
+   - Implemente retry policies
+   - Mantenha logs adequados
+
+4. **Backup e Recuperação**
+   - Mantenha backups regulares
+   - Documente procedimentos de recuperação
+   - Teste os procedimentos periodicamente
+
+---
+
+## Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+Desenvolvido com ❤️ pela equipe PetShop API
